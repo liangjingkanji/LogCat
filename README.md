@@ -1,20 +1,37 @@
-# LogCat
+## LogCat
+
+
+<p align="center"><img src="https://i.imgur.com/S0IjjHS.jpg" width="25%"/></p>
+
+<p align="center"><strong>全局日志</strong></p>
+
+<p align="center"><a href="http://liangjingkanji.github.io/LogCat/">使用文档</a></p>
+<p align="center"><img src="https://i.imgur.com/t3vnPHs.jpg" width="200"/></p>
 
 
 
-特性
+<p align="center">
+<a href="https://jitpack.io/#liangjingkanji/LogCat"><img src="https://jitpack.io/v/liangjingkanji/LogCat.svg"/></a>
+<img src="https://img.shields.io/badge/language-kotlin-orange.svg"/>
+<img src="https://img.shields.io/badge/license-Apache-blue"/>
+<a href="https://jq.qq.com/?_wv=1027&k=vWsXSNBJ"><img src="https://img.shields.io/badge/QQ群-752854893-blue"/></a>
+</p>
 
--   普通支持输出
--   JSON格式化输出
--   超大字符串输出
+
+<p align="center"><img src="https://i.imgur.com/lZXNqXE.jpg" width="30%;" /></p>
+
+## 特点
+
 -   日志全局开关
--   日志全局TAG
--   日志树
--   Kotlin默认函数支持
-
-
-
-
+-   日志全局标签TAG
+-   日志全局开关
+-   日志全局拦截器
+-   打印日常信息
+-   输出JSON
+-   输出超长字符串
+-   日志堆栈输出
+-   自定义日志等级
+-   Kotlin特性
 
 ## 安装
 
@@ -34,84 +51,24 @@ allprojects {
 module 的 build.gradle
 
 ```groovy
-implementation 'com.github.liangjingkanji:LogCat:1.0'
+implementation 'com.github.liangjingkanji:LogCat:1.1'
 ```
 
 
 
-## 普通日志
+## License
 
 ```
-LogCat.v
-LogCat.i
-LogCat.d
-LogCat.w
-LogCat.e
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
-
-
-
-所有函数遵守以下参数顺序
-
-```
-fun v(message: String, tag: String = defaultTag, t: Throwable? = null)
-```
-
-
-
->    输出超大字符串
-
-```
-LogCat.big(message, tag)
-```
-
-
-
-## JSON
-
-示例
-
-```kotlin
-LogCat.json(getString(R.string.json))
-```
-
-
-
-该函数可以格式化JSON输出, 如果字符串不是JSON会原样输出
-
-```kotlin
-fun json(message: String?, tag: String = defaultTag, url: String? = null)
-```
-
-
-
-![image-20191114155032432](/Users/drake/Library/Application Support/typora-user-images/image-20191114155032432.png)
-
-
-
-
-
-## 全局TAG|开关
-
-可以单独设置一个参数
-
-```
- LogCat.setConfig("日志", true)
-```
-
-
-
-## 日志树
-
-和 Timer 框架类似的日志树, 每个日志输出内容都会被监听器回调
-
-```kotlin
-LogCat.addTree(object : Tree {
-    override fun log(message: String, tag: String, t: Throwable?, level: LogLevel) {
-        
-    }
-})
-```
-
-
 

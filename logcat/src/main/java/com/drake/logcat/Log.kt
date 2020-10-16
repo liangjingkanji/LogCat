@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package com.drake.logcat.sample
+package com.drake.logcat
 
-import android.app.Application
-import com.drake.logcat.LogCat
-
-class App : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-
-        LogCat.config {
-            enabled = BuildConfig.DEBUG
-            defaultTag = "日志"
-            addInterceptor(LogStoreInterceptor())
+inline val STACK_INFO
+    get() = object : Throwable() {
+        override fun toString(): String {
+            return ""
         }
     }
+
+/**
+ * 输出异常堆栈信息
+ */
+fun Throwable.logCat(tag: String? = LogCat.defaultTag) {
+    LogCat.e(this, tag)
 }

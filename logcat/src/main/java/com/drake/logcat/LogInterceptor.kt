@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package com.drake.logcat.sample
+package com.drake.logcat
 
-import android.app.Application
-import com.drake.logcat.LogCat
+/**
+ * 日志拦截器
+ */
+interface LogInterceptor {
 
-class App : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-
-        LogCat.config {
-            enabled = BuildConfig.DEBUG
-            defaultTag = "日志"
-            addInterceptor(LogStoreInterceptor())
-        }
-    }
+    /**
+     * 拦截日志
+     */
+    fun intercept(chain: Chain)
 }

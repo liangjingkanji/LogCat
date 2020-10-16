@@ -1,0 +1,44 @@
+site_name: LogCat
+site_author: drake
+site_description: LogCat document
+copyright: Copyright &copy; 2018 - 2020 Drake
+
+repo_name: GitHub
+repo_url: https://github.com/liangjingkanji/LogCat
+
+extra_css:
+  - css/extra.css
+
+docs_dir: docs
+
+theme:
+  name: material
+  custom_dir: docs/material
+
+  palette:
+    scheme: drake
+    primary: white
+
+  font: false
+
+  language: zh
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed
+
+
+nav:
+  - 使用: index.md
+  - 配置: config.md
+  - 异常: exception.md
+  - 拦截器: interceptor.md
+  - 堆栈信息: stack.md
+  - 1.x文档: api/logcat/com.drake.logcat/index.md

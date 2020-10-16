@@ -16,18 +16,18 @@
 
 package com.drake.logcat.sample
 
-import android.app.Application
-import com.drake.logcat.LogCat
+import com.drake.logcat.Chain
+import com.drake.logcat.LogInterceptor
 
-class App : Application() {
+/**
+ * 上传日志拦截器
+ */
+class LogStoreInterceptor : LogInterceptor {
 
-    override fun onCreate() {
-        super.onCreate()
-
-        LogCat.config {
-            enabled = BuildConfig.DEBUG
-            defaultTag = "日志"
-            addInterceptor(LogStoreInterceptor())
+    override fun intercept(chain: Chain) {
+        chain.message?.let {
+            // ... 上传或者保存到本地
         }
     }
 }
+

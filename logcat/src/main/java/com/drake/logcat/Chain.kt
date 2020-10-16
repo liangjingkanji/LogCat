@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package com.drake.logcat.sample
+package com.drake.logcat
 
-import android.app.Application
-import com.drake.logcat.LogCat
-
-class App : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-
-        LogCat.config {
-            enabled = BuildConfig.DEBUG
-            defaultTag = "日志"
-            addInterceptor(LogStoreInterceptor())
-        }
+/**
+ * 日志拦截器的链式对象
+ *
+ * @param level 等级
+ * @param message 信息
+ * @param tag 标签
+ * @param stack 异常
+ * @param cancel 是否终止
+ */
+data class Chain(
+    var level: Int,
+    var message: String?,
+    var tag: String,
+    var stack: Throwable? = null,
+    internal var cancel: Boolean = false
+) {
+    /**
+     * 取消日志打印
+     */
+    fun cancel() {
+        cancel = true
     }
 }

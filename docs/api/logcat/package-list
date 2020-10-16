@@ -1,0 +1,4 @@
+$dokka.format:gfm
+$dokka.linkExtension:md
+$dokka.location:com.drake.logcat$logCat(kotlin.Throwable, kotlin.String)com.drake.logcat/kotlin.-throwable/log-cat.md
+com.drake.logcat

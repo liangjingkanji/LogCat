@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/logFragment">
+
+    <fragment
+        android:id="@+id/exceptionFragment"
+        android:name="com.drake.logcat.sample.fragment.ExceptionFragment"
+        android:label="异常日志"
+        tools:layout="@layout/fragment_exception" />
+    <fragment
+        android:id="@+id/logFragment"
+        android:name="com.drake.logcat.sample.fragment.LogFragment"
+        android:label="输出日志"
+        tools:layout="@layout/fragment_log" />
+    <fragment
+        android:id="@+id/logInterceptorFragment"
+        android:name="com.drake.logcat.sample.fragment.LogInterceptorFragment"
+        android:label="日志拦截器"
+        tools:layout="@layout/fragment_log_interceptor" />
+    <fragment
+        android:id="@+id/stackFragment"
+        android:name="com.drake.logcat.sample.fragment.StackFragment"
+        android:label="堆栈信息"
+        tools:layout="@layout/fragment_stack" />
+</navigation>
