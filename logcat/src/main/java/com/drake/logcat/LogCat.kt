@@ -1,13 +1,26 @@
 /*
- * Copyright (C) 2018, Umbrella CompanyLimited All rights reserved.
- * Project：Engine
- * Author：Drake
- * Date：9/15/19 3:27 PM
+ * Copyright (C) 2018 Drake, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 @file:Suppress("SENSELESS_COMPARISON")
 
 package com.drake.logcat
 
+import android.util.Log
+import com.drake.logcat.LogCat.defaultTag
+import com.drake.logcat.LogCat.enabled
+import com.drake.logcat.LogCat.logInterceptors
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
@@ -15,162 +28,210 @@ import kotlin.math.min
 
 
 @Suppress("MemberVisibilityCanBePrivate")
+/**
+ * @property defaultTag 默认日志标签
+ * @property enabled 日志全局开关
+ * @property logInterceptors 日志拦截器
+ */
 object LogCat {
 
-    private var defaultTag = "日志"
-    private var enabled = true
+    // 日志等级
+    const val VERBOSE = 2
+    const val DEBUG = 3
+    const val INFO = 4
+    const val WARN = 5
+    const val ERROR = 6
+    const val ASSERT = 7
 
-    val trees = mutableListOf<Tree>()
+    var defaultTag = "日志"
+    var enabled = true
 
+    val logInterceptors by lazy { ArrayList<LogInterceptor>() }
 
     /**
-     * 设置日志配置
+     * 配置
+     */
+    fun config(block: LogCat.() -> Unit) {
+        block.invoke(this)
+    }
+
+    //<editor-fold desc="拦截器">
+    /**
+     * 添加日志拦截器
+     */
+    fun addInterceptor(interceptor: LogInterceptor) {
+        logInterceptors.add(interceptor)
+    }
+
+    /**
+     * 删除日志拦截器
+     */
+    fun removeInterceptor(interceptor: LogInterceptor) {
+        logInterceptors.remove(interceptor)
+    }
+
+    //</editor-fold>
+
+    // <editor-fold desc="输出">
+
+    fun v(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
+        print(VERBOSE, message, tag, stack)
+    }
+
+    fun i(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
+        print(INFO, message, tag, stack)
+    }
+
+    fun d(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
+        print(DEBUG, message, tag, stack)
+    }
+
+    fun w(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
+        print(WARN, message, tag, stack)
+    }
+
+    fun e(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
+        print(ERROR, message, tag, stack)
+    }
+
+    fun wtf(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
+        print(ASSERT, message, tag, stack)
+    }
+
+    fun e(stack: Throwable?, tag: String? = this.defaultTag) {
+        print(ERROR, null, tag, stack)
+    }
+
+    /**
+     * 输出日志
+     * 如果[message]和[stack]为空或者[tag]为空将不会输出日志, 拦截器
      *
-     * @param tag     过滤TAG
-     * @param enabled 是否打印
+     * @param level 日志等级
+     * @param message 日志信息
+     * @param tag 日志标签
+     * @param stack 日志异常
      */
-    fun setConfig(tag: String = defaultTag, enabled: Boolean = this.enabled) {
-        this.enabled = enabled
-        defaultTag = tag
-    }
+    fun print(
+        level: Int = INFO,
+        message: String? = null,
+        tag: String? = defaultTag,
+        stack: Throwable? = null
+    ) {
+        if (!enabled || tag.isNullOrEmpty()) return
 
+        val chain = Chain(level, message, tag, stack)
 
-    /**
-     * 日志信息将被分发到Tree中
-     * @param tree Tree
-     */
-    fun addTree(tree: Tree) {
-        trees.add(tree)
-    }
-
-    // <editor-fold desc="日志输出">
-
-    fun v(message: String, tag: String = defaultTag, t: Throwable? = null) {
-        if (enabled) {
-            android.util.Log.v(tag, message)
-
-            trees.forEach {
-                it.log(message, tag, t, LogLevel.LOG_LEVEL_VERBOSE)
-            }
+        logInterceptors.forEach {
+            it.intercept(chain)
         }
-    }
 
-    fun i(message: String, tag: String = defaultTag, t: Throwable? = null) {
-        if (enabled) {
-            android.util.Log.i(tag, message)
+        if (chain.cancel || tag.isNullOrEmpty()) return
 
-            trees.forEach {
-                it.log(message, tag, t, LogLevel.LOG_LEVEL_INFO)
-            }
-        }
-    }
-
-    fun d(message: String, tag: String = defaultTag, t: Throwable? = null) {
-        if (enabled) {
-            android.util.Log.d(tag, message)
-
-            trees.forEach {
-                it.log(message, tag, t, LogLevel.LOG_LEVEL_DEBUG)
-            }
-        }
-    }
-
-
-    fun w(message: String, tag: String = defaultTag, t: Throwable? = null) {
-        if (enabled) {
-            android.util.Log.w(tag, message)
-
-            trees.forEach {
-                it.log(message, tag, t, LogLevel.LOG_LEVEL_WARN)
-            }
-        }
-    }
-
-    fun e(message: String, tag: String = defaultTag, t: Throwable? = null) {
-        if (enabled) {
-            android.util.Log.e(tag, message, t)
-
-            trees.forEach {
-                it.log(message, tag, t, LogLevel.LOG_LEVEL_ERROR)
-            }
-        }
-    }
-
-
-    /**
-     * Json格式输出Log
-     *
-     * @param tag     标签
-     * @param url     Url
-     * @param message Json字符串
-     */
-    fun json(message: String?, tag: String = defaultTag, url: String? = null) {
-
-        synchronized(LogCat::class.java) {
-
-            if (!enabled || message == null) return
-
-            val jsonTokener = JSONTokener(message)
-
-
-            var actualMessage: String
-
-            actualMessage = when (val value = jsonTokener.nextValue()) {
-
-                is JSONObject -> {
-                    value.toString(2)
-                }
-                is JSONArray -> {
-                    value.toString(2)
-                }
-                else -> value.toString()
-            }
-
-            if (!url.isNullOrEmpty()) actualMessage = "$url\r\n$actualMessage"
-
-            big(actualMessage, tag)
-        }
-    }
-
-    /**
-     * 如果字符串超长将分段输出
-     *
-     * @param message
-     */
-    fun big(message: String, tag: String = defaultTag) {
-        synchronized(this) {
-            val max = 3900
-            val length = message.length
-            var startIndex = 0
-            var endIndex = max
-
-            if (length <= max) {
-                i(message, tag)
+        val adjustMsg = if (stack == null) {
+            if (message.isNullOrEmpty()) " " else message
+        } else {
+            if (message.isNullOrBlank()) {
+                Log.getStackTraceString(stack)
             } else {
+                "$message\n${Log.getStackTraceString(stack)}"
+            }
+        }
+
+        val max = 3800
+        val length = adjustMsg.length
+        if (length > max) {
+            synchronized(this) {
+                var startIndex = 0
+                var endIndex = max
                 while (startIndex < length) {
                     endIndex = min(length, endIndex)
-
-                    val content = message.substring(startIndex, endIndex)
-                    i(content, tag)
-
+                    val substring = adjustMsg.substring(startIndex, endIndex)
+                    log(level, substring, tag)
                     startIndex += max
                     endIndex += max
                 }
             }
+        } else {
+            log(level, adjustMsg, tag)
         }
     }
 
+    /**
+     * Json格式输出Log
+     *
+     * @param message JSON
+     * @param tag     标签
+     * @param url     地址
+     */
+    fun json(
+        message: String?,
+        tag: String? = this.defaultTag,
+        url: String? = null,
+        level: Int = INFO
+    ) {
+        if (!enabled || tag.isNullOrBlank()) return
+
+        val chain = Chain(level, message, tag)
+
+        logInterceptors.forEach {
+            it.intercept(chain)
+        }
+
+        if (chain.cancel || tag.isNullOrBlank()) return
+
+        if (message.isNullOrBlank()) {
+            val adjustMsg = if (url.isNullOrBlank()) message else url
+            print(level, adjustMsg, tag)
+            return
+        }
+
+        val tokener = JSONTokener(message)
+
+        val obj = try {
+            tokener.nextValue()
+        } catch (e: Exception) {
+            "Parse json error"
+        }
+
+        var finalMsg = when (obj) {
+            is JSONObject -> {
+                obj.toString(2)
+            }
+            is JSONArray -> {
+                obj.toString(2)
+            }
+            else -> obj.toString()
+        }
+
+        if (!url.isNullOrBlank()) finalMsg = "$url\n$finalMsg"
+
+        print(level, finalMsg, tag)
+    }
+
+    private fun log(level: Int, adjustMsg: String, tag: String) {
+        when (level) {
+            VERBOSE -> {
+                Log.v(tag, adjustMsg)
+            }
+            DEBUG -> {
+                Log.d(tag, adjustMsg)
+            }
+            INFO -> {
+                Log.i(tag, adjustMsg)
+            }
+            WARN -> {
+                Log.w(tag, adjustMsg)
+            }
+            ERROR -> {
+                Log.e(tag, adjustMsg)
+            }
+            ASSERT -> {
+                Log.wtf(tag, adjustMsg)
+            }
+            else -> {
+                Log.e(tag, adjustMsg)
+            }
+        }
+    }
     // </editor-fold>
-}
-
-interface Tree {
-    fun log(message: String, tag: String, t: Throwable?, level: LogLevel)
-}
-
-enum class LogLevel {
-    LOG_LEVEL_VERBOSE,
-    LOG_LEVEL_INFO,
-    LOG_LEVEL_DEBUG,
-    LOG_LEVEL_WARN,
-    LOG_LEVEL_ERROR,
 }

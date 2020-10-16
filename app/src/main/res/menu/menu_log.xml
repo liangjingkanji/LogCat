@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_verbose"
+        android:title="Verbose" />
+    <item
+        android:id="@+id/menu_debug"
+        android:title="Debug" />
+    <item
+        android:id="@+id/menu_info"
+        android:title="Info" />
+    <item
+        android:id="@+id/menu_warn"
+        android:title="Warn" />
+    <item
+        android:id="@+id/menu_error"
+        android:title="Error" />
+    <item
+        android:id="@+id/menu_assert"
+        android:title="Assert" />
+    <item
+        android:id="@+id/menu_json"
+        android:title="JSON" />
+</menu>
