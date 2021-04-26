@@ -5,7 +5,7 @@
 
 <p align="center"><strong>全局日志工具</strong></p>
 
-<p align="center"><a href="http://liangjingkanji.github.io/LogCat/">使用文档</a></p>
+<p align="center"><a href="http://liangjingkanji.github.io/LogCat/">使用文档</a> | <a href="https://coding-pages-bucket-3558162-8706000-16645-587723-1252757332.cos-website.ap-shanghai.myqcloud.com/">备用访问</a></p>
 <p align="center"><img src="https://i.imgur.com/t3vnPHs.jpg" width="200"/></p>
 
 
