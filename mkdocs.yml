@@ -41,4 +41,4 @@ nav:
   - 异常: exception.md
   - 拦截器: interceptor.md
   - 堆栈信息: stack.md
-  - 1.x文档: api/logcat/com.drake.logcat/index.md
+  - 1.x文档: api/index.html
