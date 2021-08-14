@@ -10,7 +10,7 @@ try {
 
 日志结果
 
-<img src="https://i.imgur.com/H14xCET.png" width="700"/>
+<img src="https://i.loli.net/2021/08/14/r8zVRvYNPLljfsg.png" width="700"/>
 
 每个日志函数都可以输出异常
 
