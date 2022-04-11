@@ -74,32 +74,46 @@ object LogCat {
 
     // <editor-fold desc="输出">
 
+    @JvmOverloads
+    @JvmStatic
     fun v(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
         print(VERBOSE, message, tag, stack)
     }
 
+    @JvmOverloads
+    @JvmStatic
     fun i(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
         print(INFO, message, tag, stack)
     }
 
+    @JvmOverloads
+    @JvmStatic
     fun d(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
         print(DEBUG, message, tag, stack)
     }
 
+    @JvmOverloads
+    @JvmStatic
     fun w(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
         print(WARN, message, tag, stack)
     }
 
+    @JvmOverloads
+    @JvmStatic
     fun e(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
         print(ERROR, message, tag, stack)
     }
 
-    fun wtf(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
-        print(ASSERT, message, tag, stack)
-    }
-
+    @JvmOverloads
+    @JvmStatic
     fun e(stack: Throwable?, tag: String? = this.defaultTag) {
         print(ERROR, null, tag, stack)
+    }
+
+    @JvmOverloads
+    @JvmStatic
+    fun wtf(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
+        print(ASSERT, message, tag, stack)
     }
 
     /**
@@ -111,6 +125,8 @@ object LogCat {
      * @param tag 日志标签
      * @param stack 日志异常
      */
+    @JvmOverloads
+    @JvmStatic
     fun print(
         level: Int = INFO,
         message: String? = null,
@@ -163,6 +179,8 @@ object LogCat {
      * @param tag     标签
      * @param url     地址
      */
+    @JvmOverloads
+    @JvmStatic
     fun json(
         message: String?,
         tag: String? = this.defaultTag,
