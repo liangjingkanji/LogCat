@@ -20,9 +20,9 @@ package com.drake.logcat
 
 import android.util.Log
 import com.drake.logcat.LogCat.Type.*
-import com.drake.logcat.LogCat.defaultTag
 import com.drake.logcat.LogCat.enabled
 import com.drake.logcat.LogCat.logHooks
+import com.drake.logcat.LogCat.tag
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
@@ -31,7 +31,7 @@ import kotlin.math.min
 
 @Suppress("MemberVisibilityCanBePrivate")
 /**
- * @property defaultTag 默认日志标签
+ * @property tag 默认日志标签
  * @property enabled 日志全局开关
  * @property logHooks 日志拦截器
  */
@@ -42,7 +42,7 @@ object LogCat {
     }
 
     /** 日志默认标签 */
-    var defaultTag = "日志"
+    var tag = "日志"
 
     /** 是否启用日志 */
     var enabled = true
@@ -57,9 +57,9 @@ object LogCat {
      * @param enabled 是否启用日志
      * @param tag 日志默认标签
      */
-    fun setDebug(enabled: Boolean, tag: String = defaultTag) {
+    fun setDebug(enabled: Boolean, tag: String = this.tag) {
         this.enabled = enabled
-        this.defaultTag = tag
+        this.tag = tag
     }
 
     //<editor-fold desc="Hook">
@@ -82,45 +82,45 @@ object LogCat {
 
     @JvmOverloads
     @JvmStatic
-    fun v(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+    fun v(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
         print(VERBOSE, message, tag, trace)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun i(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+    fun i(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
         print(INFO, message, tag, trace)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun d(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+    fun d(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
         print(DEBUG, message, tag, trace)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun w(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+    fun w(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
         print(WARN, message, tag, trace)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun e(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+    fun e(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
         print(ERROR, message, tag, trace)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun e(exception: Throwable?, tag: String? = this.defaultTag) {
+    fun e(exception: Throwable?, tag: String = this.tag) {
         exception ?: return
         print(ERROR, exception.stackTraceToString(), tag, null)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun wtf(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
-        print(Type.WTF, message, tag, trace)
+    fun wtf(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
+        print(WTF, message, tag, trace)
     }
 
     /**
@@ -137,10 +137,10 @@ object LogCat {
     fun print(
         type: Type = INFO,
         message: String? = null,
-        tag: String? = defaultTag,
+        tag: String = this.tag,
         trace: Throwable? = Throwable()
     ) {
-        if (!enabled || tag.isNullOrEmpty()) return
+        if (!enabled || message == null) return
 
         val info = LogInfo(type, message, tag, trace)
         for (logHook in logHooks) {
@@ -148,7 +148,7 @@ object LogCat {
             if (info.message == null) return
         }
 
-        var adjustMsg = if (message.isNullOrEmpty()) " " else message
+        var adjustMsg = message
         if (traceEnabled && trace != null) {
             trace.stackTrace.getOrNull(1)?.run {
                 adjustMsg += " ($fileName:$lineNumber)"
@@ -185,7 +185,7 @@ object LogCat {
     @JvmStatic
     fun json(
         message: String?,
-        tag: String? = this.defaultTag,
+        tag: String = this.tag,
         url: String? = null,
         type: Type = INFO
     ) {
@@ -221,24 +221,12 @@ object LogCat {
 
     private fun log(type: Type, adjustMsg: String, tag: String) {
         when (type) {
-            VERBOSE -> {
-                Log.v(tag, adjustMsg)
-            }
-            DEBUG -> {
-                Log.d(tag, adjustMsg)
-            }
-            INFO -> {
-                Log.i(tag, adjustMsg)
-            }
-            WARN -> {
-                Log.w(tag, adjustMsg)
-            }
-            ERROR -> {
-                Log.e(tag, adjustMsg)
-            }
-            Type.WTF -> {
-                Log.wtf(tag, adjustMsg)
-            }
+            VERBOSE -> Log.v(tag, adjustMsg)
+            DEBUG -> Log.d(tag, adjustMsg)
+            INFO -> Log.i(tag, adjustMsg)
+            WARN -> Log.w(tag, adjustMsg)
+            ERROR -> Log.e(tag, adjustMsg)
+            WTF -> Log.wtf(tag, adjustMsg)
         }
     }
     // </editor-fold>
