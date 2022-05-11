@@ -24,7 +24,7 @@ import com.drake.logcat.LogInfo
  */
 class LogUploadHook : LogHook {
     override fun hook(info: LogInfo) {
-        info.message?.let {
+        info.msg?.let {
             // ... 上传或者保存到本地
         }
     }

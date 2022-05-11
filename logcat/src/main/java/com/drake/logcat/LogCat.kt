@@ -82,79 +82,101 @@ object LogCat {
 
     @JvmOverloads
     @JvmStatic
-    fun v(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
-        print(VERBOSE, message, tag, trace)
+    fun v(
+        msg: String?,
+        tag: String = this.tag,
+        tr: Throwable? = null,
+        occurred: Throwable? = Exception()
+    ) {
+
+        print(VERBOSE, msg, tag, tr, occurred)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun i(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
-        print(INFO, message, tag, trace)
+    fun i(
+        msg: String?,
+        tag: String = this.tag,
+        tr: Throwable? = null,
+        occurred: Throwable? = Exception()
+    ) {
+        print(INFO, msg, tag, tr, occurred)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun d(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
-        print(DEBUG, message, tag, trace)
+    fun d(
+        msg: String?,
+        tag: String = this.tag,
+        tr: Throwable? = null,
+        occurred: Throwable? = Exception()
+    ) {
+        print(DEBUG, msg, tag, tr, occurred)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun w(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
-        print(WARN, message, tag, trace)
+    fun w(
+        msg: String?,
+        tag: String = this.tag,
+        tr: Throwable? = null,
+        occurred: Throwable? = Exception()
+    ) {
+        print(WARN, msg, tag, tr, occurred)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun e(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
-        print(ERROR, message, tag, trace)
+    fun e(
+        msg: String?,
+        tag: String = this.tag,
+        tr: Throwable? = null,
+        occurred: Throwable? = Exception()
+    ) {
+        print(ERROR, msg, tag, tr, occurred)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun e(exception: Throwable?, tag: String = this.tag) {
-        exception ?: return
-        print(ERROR, exception.stackTraceToString(), tag, null)
-    }
-
-    @JvmOverloads
-    @JvmStatic
-    fun wtf(message: String?, tag: String = this.tag, trace: Throwable? = Throwable()) {
-        print(WTF, message, tag, trace)
+    fun wtf(
+        msg: String?,
+        tag: String = this.tag,
+        tr: Throwable? = null,
+        occurred: Throwable? = Exception()
+    ) {
+        print(WTF, msg, tag, tr, occurred)
     }
 
     /**
      * 输出日志
-     * 如果[message]和[trace]为空或者[tag]为空将不会输出日志, 拦截器
+     * 如果[msg]和[occurred]为空或者[tag]为空将不会输出日志, 拦截器
      *
      * @param type 日志等级
-     * @param message 日志信息
+     * @param msg 日志信息
      * @param tag 日志标签
-     * @param trace 日志异常
+     * @param occurred 日志异常
      */
-    @JvmOverloads
-    @JvmStatic
-    fun print(
+    private fun print(
         type: Type = INFO,
-        message: String? = null,
+        msg: String? = null,
         tag: String = this.tag,
-        trace: Throwable? = Throwable()
+        tr: Throwable? = null,
+        occurred: Throwable? = Exception()
     ) {
-        if (!enabled || message == null) return
+        if (!enabled || msg == null) return
 
-        val info = LogInfo(type, message, tag, trace)
+        val info = LogInfo(type, msg, tag, tr, occurred)
         for (logHook in logHooks) {
             logHook.hook(info)
-            if (info.message == null) return
+            if (info.msg == null) return
         }
 
-        var adjustMsg = message
-        if (traceEnabled && trace != null) {
-            trace.stackTrace.getOrNull(1)?.run {
+        var adjustMsg = msg
+        if (traceEnabled && occurred != null) {
+            occurred.stackTrace.getOrNull(1)?.run {
                 adjustMsg += " ($fileName:$lineNumber)"
             }
         }
-
         val max = 3800
         val length = adjustMsg.length
         if (length > max) {
@@ -164,47 +186,48 @@ object LogCat {
                 while (startIndex < length) {
                     endIndex = min(length, endIndex)
                     val substring = adjustMsg.substring(startIndex, endIndex)
-                    log(type, substring, tag)
+                    log(type, substring, tag, tr)
                     startIndex += max
                     endIndex += max
                 }
             }
         } else {
-            log(type, adjustMsg, tag)
+            log(type, adjustMsg, tag, tr)
         }
     }
 
     /**
      * Json格式输出Log
      *
-     * @param message JSON
+     * @param msg JSON
      * @param tag     标签
      * @param url     地址
      */
     @JvmOverloads
     @JvmStatic
     fun json(
-        message: String?,
+        msg: String?,
         tag: String = this.tag,
         url: String? = null,
-        type: Type = INFO
+        type: Type = INFO,
+        occurred: Throwable? = Exception()
     ) {
-        if (!enabled || tag.isNullOrBlank()) return
+        if (!enabled || msg == null) return
 
-        if (message.isNullOrBlank()) {
-            val adjustMsg = if (url.isNullOrBlank()) message else url
+        if (msg.isNullOrBlank()) {
+            val adjustMsg = if (url.isNullOrBlank()) msg else url
             print(type, adjustMsg, tag)
             return
         }
 
-        val tokener = JSONTokener(message)
+        val tokener = JSONTokener(msg)
         val obj = try {
             tokener.nextValue()
         } catch (e: Exception) {
             "Parse json error"
         }
 
-        var finalMsg = when (obj) {
+        var adjustMsg = when (obj) {
             is JSONObject -> {
                 obj.toString(2)
             }
@@ -213,20 +236,19 @@ object LogCat {
             }
             else -> obj.toString()
         }
+        if (!url.isNullOrBlank()) adjustMsg = "$url\n$adjustMsg"
 
-        if (!url.isNullOrBlank()) finalMsg = "$url\n$finalMsg"
-
-        print(type, finalMsg, tag)
+        print(type, adjustMsg, tag, occurred)
     }
 
-    private fun log(type: Type, adjustMsg: String, tag: String) {
+    private fun log(type: Type, msg: String, tag: String, tr: Throwable?) {
         when (type) {
-            VERBOSE -> Log.v(tag, adjustMsg)
-            DEBUG -> Log.d(tag, adjustMsg)
-            INFO -> Log.i(tag, adjustMsg)
-            WARN -> Log.w(tag, adjustMsg)
-            ERROR -> Log.e(tag, adjustMsg)
-            WTF -> Log.wtf(tag, adjustMsg)
+            VERBOSE -> Log.v(tag, msg, tr)
+            DEBUG -> Log.d(tag, msg, tr)
+            INFO -> Log.i(tag, msg, tr)
+            WARN -> Log.w(tag, msg, tr)
+            ERROR -> Log.e(tag, msg, tr)
+            WTF -> Log.wtf(tag, msg, tr)
         }
     }
     // </editor-fold>

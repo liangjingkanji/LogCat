@@ -31,7 +31,7 @@ class LogHookFragment : EngineFragment<FragmentLogHookBinding>(R.layout.fragment
             override fun hook(info: LogInfo) {
                 // 拦截器是全局的, 所有日志都会经过于此
                 // ... 上次或者保存日志
-                if (info.message == "需要被取消的日志") info.message = null // 取消日志的输出
+                if (info.msg == "需要被取消的日志") info.msg = null // 取消日志的输出
             }
         })
         binding.btnPrint.setOnClickListener {
