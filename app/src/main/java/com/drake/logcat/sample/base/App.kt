@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Drake, Inc.
+ * Copyright (C) 2018 Drake, https://github.com/liangjingkanji
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,22 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package com.drake.logcat.sample
+package com.drake.logcat.sample.base
 
-import com.drake.logcat.Chain
-import com.drake.logcat.LogInterceptor
+import android.app.Application
+import com.drake.logcat.LogCat
+import com.drake.logcat.sample.hook.LogUploadHook
 
-/**
- * 上传日志拦截器
- */
-class LogStoreInterceptor : LogInterceptor {
+class App : Application() {
 
-    override fun intercept(chain: Chain) {
-        chain.message?.let {
-            // ... 上传或者保存到本地
-        }
+    override fun onCreate() {
+        super.onCreate()
+        LogCat.setDebug(com.drake.logcat.sample.BuildConfig.DEBUG)
+        LogCat.addHook(LogUploadHook())
     }
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Drake, Inc.
+ * Copyright (C) 2018 Drake, https://github.com/liangjingkanji
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,15 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 @file:Suppress("SENSELESS_COMPARISON")
 
 package com.drake.logcat
 
 import android.util.Log
+import com.drake.logcat.LogCat.Type.*
 import com.drake.logcat.LogCat.defaultTag
 import com.drake.logcat.LogCat.enabled
-import com.drake.logcat.LogCat.logInterceptors
+import com.drake.logcat.LogCat.logHooks
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
@@ -31,125 +33,125 @@ import kotlin.math.min
 /**
  * @property defaultTag 默认日志标签
  * @property enabled 日志全局开关
- * @property logInterceptors 日志拦截器
+ * @property logHooks 日志拦截器
  */
 object LogCat {
 
-    // 日志等级
-    const val VERBOSE = 2
-    const val DEBUG = 3
-    const val INFO = 4
-    const val WARN = 5
-    const val ERROR = 6
-    const val ASSERT = 7
-
-    var defaultTag = "日志"
-    var enabled = true
-
-    val logInterceptors by lazy { ArrayList<LogInterceptor>() }
-
-    /**
-     * 配置
-     */
-    fun config(block: LogCat.() -> Unit) {
-        block.invoke(this)
+    enum class Type {
+        VERBOSE, DEBUG, INFO, WARN, ERROR, WTF
     }
 
-    //<editor-fold desc="拦截器">
+    /** 日志默认标签 */
+    var defaultTag = "日志"
+
+    /** 是否启用日志 */
+    var enabled = true
+
+    /** 日志是否显示代码位置 */
+    var traceEnabled = true
+
+    /** 日志的Hook钩子 */
+    val logHooks by lazy { ArrayList<LogHook>() }
+
+    /**
+     * @param enabled 是否启用日志
+     * @param tag 日志默认标签
+     */
+    fun setDebug(enabled: Boolean, tag: String = defaultTag) {
+        this.enabled = enabled
+        this.defaultTag = tag
+    }
+
+    //<editor-fold desc="Hook">
     /**
      * 添加日志拦截器
      */
-    fun addInterceptor(interceptor: LogInterceptor) {
-        logInterceptors.add(interceptor)
+    fun addHook(hook: LogHook) {
+        logHooks.add(hook)
     }
 
     /**
      * 删除日志拦截器
      */
-    fun removeInterceptor(interceptor: LogInterceptor) {
-        logInterceptors.remove(interceptor)
+    fun removeHook(hook: LogHook) {
+        logHooks.remove(hook)
     }
-
     //</editor-fold>
 
-    // <editor-fold desc="输出">
+    // <editor-fold desc="Log">
 
     @JvmOverloads
     @JvmStatic
-    fun v(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
-        print(VERBOSE, message, tag, stack)
+    fun v(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+        print(VERBOSE, message, tag, trace)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun i(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
-        print(INFO, message, tag, stack)
+    fun i(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+        print(INFO, message, tag, trace)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun d(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
-        print(DEBUG, message, tag, stack)
+    fun d(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+        print(DEBUG, message, tag, trace)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun w(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
-        print(WARN, message, tag, stack)
+    fun w(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+        print(WARN, message, tag, trace)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun e(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
-        print(ERROR, message, tag, stack)
+    fun e(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+        print(ERROR, message, tag, trace)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun e(stack: Throwable?, tag: String? = this.defaultTag) {
-        print(ERROR, null, tag, stack)
+    fun e(exception: Throwable?, tag: String? = this.defaultTag) {
+        exception ?: return
+        print(ERROR, exception.stackTraceToString(), tag, null)
     }
 
     @JvmOverloads
     @JvmStatic
-    fun wtf(message: String?, tag: String? = this.defaultTag, stack: Throwable? = null) {
-        print(ASSERT, message, tag, stack)
+    fun wtf(message: String?, tag: String? = this.defaultTag, trace: Throwable? = Throwable()) {
+        print(Type.WTF, message, tag, trace)
     }
 
     /**
      * 输出日志
-     * 如果[message]和[stack]为空或者[tag]为空将不会输出日志, 拦截器
+     * 如果[message]和[trace]为空或者[tag]为空将不会输出日志, 拦截器
      *
-     * @param level 日志等级
+     * @param type 日志等级
      * @param message 日志信息
      * @param tag 日志标签
-     * @param stack 日志异常
+     * @param trace 日志异常
      */
     @JvmOverloads
     @JvmStatic
     fun print(
-        level: Int = INFO,
+        type: Type = INFO,
         message: String? = null,
         tag: String? = defaultTag,
-        stack: Throwable? = null
+        trace: Throwable? = Throwable()
     ) {
         if (!enabled || tag.isNullOrEmpty()) return
 
-        val chain = Chain(level, message, tag, stack)
-
-        logInterceptors.forEach {
-            it.intercept(chain)
+        val info = LogInfo(type, message, tag, trace)
+        for (logHook in logHooks) {
+            logHook.hook(info)
+            if (info.message == null) return
         }
 
-        if (chain.cancel || tag.isNullOrEmpty()) return
-
-        val adjustMsg = if (stack == null) {
-            if (message.isNullOrEmpty()) " " else message
-        } else {
-            if (message.isNullOrBlank()) {
-                Log.getStackTraceString(stack)
-            } else {
-                "$message\n${Log.getStackTraceString(stack)}"
+        var adjustMsg = if (message.isNullOrEmpty()) " " else message
+        if (traceEnabled && trace != null) {
+            trace.stackTrace.getOrNull(1)?.run {
+                adjustMsg += " ($fileName:$lineNumber)"
             }
         }
 
@@ -162,13 +164,13 @@ object LogCat {
                 while (startIndex < length) {
                     endIndex = min(length, endIndex)
                     val substring = adjustMsg.substring(startIndex, endIndex)
-                    log(level, substring, tag)
+                    log(type, substring, tag)
                     startIndex += max
                     endIndex += max
                 }
             }
         } else {
-            log(level, adjustMsg, tag)
+            log(type, adjustMsg, tag)
         }
     }
 
@@ -185,26 +187,17 @@ object LogCat {
         message: String?,
         tag: String? = this.defaultTag,
         url: String? = null,
-        level: Int = INFO
+        type: Type = INFO
     ) {
         if (!enabled || tag.isNullOrBlank()) return
 
-        val chain = Chain(level, message, tag)
-
-        logInterceptors.forEach {
-            it.intercept(chain)
-        }
-
-        if (chain.cancel || tag.isNullOrBlank()) return
-
         if (message.isNullOrBlank()) {
             val adjustMsg = if (url.isNullOrBlank()) message else url
-            print(level, adjustMsg, tag)
+            print(type, adjustMsg, tag)
             return
         }
 
         val tokener = JSONTokener(message)
-
         val obj = try {
             tokener.nextValue()
         } catch (e: Exception) {
@@ -223,11 +216,11 @@ object LogCat {
 
         if (!url.isNullOrBlank()) finalMsg = "$url\n$finalMsg"
 
-        print(level, finalMsg, tag)
+        print(type, finalMsg, tag)
     }
 
-    private fun log(level: Int, adjustMsg: String, tag: String) {
-        when (level) {
+    private fun log(type: Type, adjustMsg: String, tag: String) {
+        when (type) {
             VERBOSE -> {
                 Log.v(tag, adjustMsg)
             }
@@ -243,11 +236,8 @@ object LogCat {
             ERROR -> {
                 Log.e(tag, adjustMsg)
             }
-            ASSERT -> {
+            Type.WTF -> {
                 Log.wtf(tag, adjustMsg)
-            }
-            else -> {
-                Log.e(tag, adjustMsg)
             }
         }
     }

@@ -6,23 +6,13 @@
     app:startDestination="@id/logFragment">
 
     <fragment
-        android:id="@+id/exceptionFragment"
-        android:name="com.drake.logcat.sample.fragment.ExceptionFragment"
-        android:label="异常日志"
-        tools:layout="@layout/fragment_exception" />
-    <fragment
         android:id="@+id/logFragment"
-        android:name="com.drake.logcat.sample.fragment.LogFragment"
+        android:name="com.drake.logcat.sample.ui.fragment.LogFragment"
         android:label="输出日志"
         tools:layout="@layout/fragment_log" />
     <fragment
-        android:id="@+id/logInterceptorFragment"
-        android:name="com.drake.logcat.sample.fragment.LogInterceptorFragment"
+        android:id="@+id/logHookFragment"
+        android:name="com.drake.logcat.sample.ui.fragment.LogHookFragment"
         android:label="日志拦截器"
-        tools:layout="@layout/fragment_log_interceptor" />
-    <fragment
-        android:id="@+id/stackFragment"
-        android:name="com.drake.logcat.sample.fragment.StackFragment"
-        android:label="堆栈信息"
-        tools:layout="@layout/fragment_stack" />
+        tools:layout="@layout/fragment_log_hook" />
 </navigation>

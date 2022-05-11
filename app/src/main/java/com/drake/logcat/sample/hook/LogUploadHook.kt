@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.drake.logcat
+package com.drake.logcat.sample.hook
 
-inline val STACK_INFO
-    get() = object : Throwable() {
-        override fun toString(): String {
-            return ""
-        }
-    }
+import com.drake.logcat.LogHook
+import com.drake.logcat.LogInfo
 
 /**
- * 输出异常堆栈信息
+ * 上传日志拦截器
  */
-fun Throwable.logCat(tag: String? = LogCat.defaultTag) {
-    LogCat.e(this, tag)
+class LogUploadHook : LogHook {
+    override fun hook(info: LogInfo) {
+        info.message?.let {
+            // ... 上传或者保存到本地
+        }
+    }
 }
+

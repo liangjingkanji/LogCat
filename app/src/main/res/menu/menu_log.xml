@@ -16,8 +16,8 @@
         android:id="@+id/menu_error"
         android:title="Error" />
     <item
-        android:id="@+id/menu_assert"
-        android:title="Assert" />
+        android:id="@+id/menu_wtf"
+        android:title="WTF" />
     <item
         android:id="@+id/menu_json"
         android:title="JSON" />

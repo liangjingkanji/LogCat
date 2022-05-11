@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Drake, Inc.
+ * Copyright (C) 2018 Drake, https://github.com/liangjingkanji
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,17 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.drake.logcat
 
 /**
- * 日志拦截器
+ * @param type 等级
+ * @param message 消息, 如果消息为null会终止Hook拦截, 并且不会输出日志
+ * @param  tag 标签
+ * @param stack 堆栈信息
  */
-interface LogInterceptor {
-
-    /**
-     * 拦截日志
-     */
-    fun intercept(chain: Chain)
-}
+data class LogInfo(
+    var type: LogCat.Type,
+    var message: String?,
+    var tag: String,
+    var stack: Throwable? = null,
+)

@@ -1,15 +1,13 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.drake.logcat.sample"
-        minSdkVersion 19
-        targetSdkVersion 29
+        minSdkVersion 21
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -23,6 +21,7 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8
     }
+    buildFeatures.dataBinding = true
 }
 
 dependencies {
@@ -39,5 +38,6 @@ dependencies {
 
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
-    implementation 'com.github.liangjingkanji:StatusBar:1.1.1'
+    implementation 'com.github.liangjingkanji:StatusBar:2.0.2'
+    implementation 'com.github.liangjingkanji:Engine:0.0.61'
 }
