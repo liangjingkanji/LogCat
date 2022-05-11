@@ -19,13 +19,14 @@ package com.drake.logcat.sample.base
 
 import android.app.Application
 import com.drake.logcat.LogCat
+import com.drake.logcat.sample.BuildConfig
 import com.drake.logcat.sample.hook.LogUploadHook
 
 class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        LogCat.setDebug(com.drake.logcat.sample.BuildConfig.DEBUG)
+        LogCat.setDebug(BuildConfig.DEBUG)
         LogCat.addHook(LogUploadHook())
     }
 }

@@ -5,7 +5,6 @@
 
 <p align="center"><strong>全局日志工具</strong></p>
 
-<p align="center"><a href="http://liangjingkanji.github.io/LogCat/">使用文档</a> | <a href="https://coding-pages-bucket-3558162-8706000-16645-587723-1252757332.cos-website.ap-shanghai.myqcloud.com/">备用访问</a></p>
 <p align="center"><img src="https://i.imgur.com/t3vnPHs.jpg" width="200"/></p>
 
 
@@ -21,15 +20,19 @@
 ## 特点
 
 -   日志全局开关
--   日志全局标签TAG
--   日志全局开关
--   日志全局拦截器
--   打印日常信息
--   输出JSON
--   输出超长字符串
--   日志堆栈输出
--   自定义日志等级
--   Kotlin特性
+-   日志全局标签
+-   日志全局Hook
+-   日志代码位置信息
+-   json格式化输出
+-   超长日志分段输出
+
+## 使用
+
+```kotlin
+LogCat.setDebug(BuildConfig.DEBUG) // 全局开关
+
+LogCat.d("log message")
+```
 
 ## 安装
 
