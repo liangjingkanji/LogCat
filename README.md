@@ -1,9 +1,9 @@
 ## LogCat
 
 
-<p align="center"><img src="https://raw.githubusercontent.com/liangjingkanji/LogCat/master/docs/img/logo.gif" width="25%"/></p>
+<p align="center"><img src="https://i.imgur.com/3NdQ93C.png" alt="1600" width="25%"/></p>
 
-<p align="center"><strong>全局日志工具</strong></p>
+<p align="center"><strong>轻量级的日志工具</strong></p>
 
 <p align="center"><img src="https://i.imgur.com/t3vnPHs.jpg" width="200"/></p>
 
@@ -23,7 +23,7 @@
 -   日志全局标签
 -   日志全局Hook
 -   日志代码位置信息
--   json格式化输出
+-   格式化输出JSON
 -   超长日志分段输出
 
 ## 使用

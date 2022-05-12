@@ -209,7 +209,7 @@ object LogCat {
     }
 
     /**
-     * Json格式化输出日志
+     * JSON格式化输出日志
      * @param tag 日志标签
      * @param msg 日志信息
      * @param type 日志类型
