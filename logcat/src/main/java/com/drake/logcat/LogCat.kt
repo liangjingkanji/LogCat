@@ -138,6 +138,17 @@ object LogCat {
 
     @JvmOverloads
     @JvmStatic
+    fun e(
+        tr: Throwable? = null,
+        tag: String = this.tag,
+        occurred: Throwable? = Exception(),
+        msg: Any? = "",
+    ) {
+        print(ERROR, msg, tag, tr, occurred)
+    }
+
+    @JvmOverloads
+    @JvmStatic
     fun wtf(
         msg: Any?,
         tag: String = this.tag,
