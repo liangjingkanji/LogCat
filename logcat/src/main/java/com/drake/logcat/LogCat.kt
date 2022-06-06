@@ -186,7 +186,7 @@ object LogCat {
 
         if (traceEnabled && occurred != null) {
             occurred.stackTrace.getOrNull(1)?.run {
-                message += " ($fileName:$lineNumber)"
+                message += " ...($fileName:$lineNumber)"
             }
         }
         val max = 3800
