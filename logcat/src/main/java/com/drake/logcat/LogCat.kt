@@ -139,7 +139,7 @@ object LogCat {
     @JvmOverloads
     @JvmStatic
     fun e(
-        tr: Throwable? = null,
+        tr: Throwable?,
         tag: String = this.tag,
         occurred: Throwable? = Exception(),
         msg: Any? = "",
