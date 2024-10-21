@@ -8,8 +8,13 @@
     <fragment
         android:id="@+id/logFragment"
         android:name="com.drake.logcat.sample.ui.fragment.LogFragment"
-        android:label="输出日志"
+        android:label="输出日志(Kotlin)"
         tools:layout="@layout/fragment_log" />
+    <fragment
+        android:id="@+id/logJavaFragment"
+        android:name="com.drake.logcat.sample.ui.fragment.LogJavaFragment"
+        android:label="输出日志(Java)"
+        tools:layout="@layout/fragment_java_log" />
     <fragment
         android:id="@+id/logHookFragment"
         android:name="com.drake.logcat.sample.ui.fragment.LogHookFragment"

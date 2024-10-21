@@ -185,7 +185,7 @@ object LogCat {
         }
 
         if (traceEnabled && occurred != null) {
-            occurred.stackTrace.getOrNull(1)?.run {
+            occurred.stackTrace.firstOrNull { it.className != this.javaClass.name }?.run {
                 message += " ...($fileName:$lineNumber)"
             }
         }
