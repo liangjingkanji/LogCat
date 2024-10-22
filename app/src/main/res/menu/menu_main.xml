@@ -24,6 +24,10 @@
         android:icon="@drawable/ic_log"
         android:title="输出日志(Java)" />
     <item
+        android:id="@+id/benchmarkFragment"
+        android:icon="@drawable/ic_log"
+        android:title="输出压测" />
+    <item
         android:id="@+id/logHookFragment"
         android:icon="@drawable/ic_hook"
         android:title="日志拦截器" />

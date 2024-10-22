@@ -191,8 +191,8 @@ object LogCat {
         }
         val max = 3800
         val length = message.length
-        if (length > max) {
-            synchronized(this) {
+        synchronized(this) {
+            if (length > max) {
                 var startIndex = 0
                 var endIndex = max
                 while (startIndex < length) {
@@ -202,9 +202,9 @@ object LogCat {
                     startIndex += max
                     endIndex += max
                 }
+            } else {
+                log(type, message, tag, tr)
             }
-        } else {
-            log(type, message, tag, tr)
         }
     }
 
@@ -229,7 +229,7 @@ object LogCat {
         var message = json.toString()
 
         val occurredMsg = if (traceEnabled && occurred != null) {
-            occurred.stackTrace.getOrNull(1)?.run { " ($fileName:$lineNumber)" }
+            occurred.stackTrace.firstOrNull { it.className != this.javaClass.name }?.run { " ($fileName:$lineNumber)" }
         } else ""
 
         if (message.isBlank()) {

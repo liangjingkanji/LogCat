@@ -16,6 +16,11 @@
         android:label="输出日志(Java)"
         tools:layout="@layout/fragment_java_log" />
     <fragment
+        android:id="@+id/benchmarkFragment"
+        android:name="com.drake.logcat.sample.ui.fragment.BenchmarkFragment"
+        android:label="日志压测"
+        tools:layout="@layout/fragment_benchmark" />
+    <fragment
         android:id="@+id/logHookFragment"
         android:name="com.drake.logcat.sample.ui.fragment.LogHookFragment"
         android:label="日志拦截器"
