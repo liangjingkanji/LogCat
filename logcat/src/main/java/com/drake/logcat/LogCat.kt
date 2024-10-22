@@ -185,14 +185,15 @@ object LogCat {
         }
 
         if (traceEnabled && occurred != null) {
-            occurred.stackTrace.getOrNull(1)?.run {
+            occurred.stackTrace.firstOrNull { it.className != this.javaClass.name }?.run {
                 message += " ...($fileName:$lineNumber)"
             }
         }
         val max = 3800
         val length = message.length
-        if (length > max) {
-            synchronized(this) {
+        // fixed by A-kua @date 2024/10/22
+        synchronized(this) {
+            if (length > max) {
                 var startIndex = 0
                 var endIndex = max
                 while (startIndex < length) {
@@ -202,9 +203,9 @@ object LogCat {
                     startIndex += max
                     endIndex += max
                 }
+            } else {
+                log(type, message, tag, tr)
             }
-        } else {
-            log(type, message, tag, tr)
         }
     }
 

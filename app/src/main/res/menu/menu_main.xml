@@ -18,7 +18,11 @@
     <item
         android:id="@+id/logFragment"
         android:icon="@drawable/ic_log"
-        android:title="输出日志" />
+        android:title="输出日志(Kotlin)" />
+    <item
+        android:id="@+id/logJavaFragment"
+        android:icon="@drawable/ic_log"
+        android:title="输出日志(Java)" />
     <item
         android:id="@+id/logHookFragment"
         android:icon="@drawable/ic_hook"
