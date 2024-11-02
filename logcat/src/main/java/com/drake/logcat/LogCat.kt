@@ -26,6 +26,7 @@ import com.drake.logcat.LogCat.tag
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
+import java.util.concurrent.Executors
 import kotlin.math.min
 
 
@@ -36,6 +37,8 @@ import kotlin.math.min
  * @property logHooks 日志拦截器
  */
 object LogCat {
+
+    private val singleExecutors = Executors.newSingleThreadExecutor()
 
     enum class Type {
         VERBOSE, DEBUG, INFO, WARN, ERROR, WTF
@@ -191,7 +194,7 @@ object LogCat {
         }
         val max = 3800
         val length = message.length
-        synchronized(this) {
+        singleExecutors.execute {
             if (length > max) {
                 var startIndex = 0
                 var endIndex = max
